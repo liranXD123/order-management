@@ -17,4 +17,13 @@ public interface OrderService {
      * Retrieves an order by its ID.
      */
     OrderResponseDto getOrder(Long id);
+
+    /**
+     * Updates the status of an existing order based on inventory availability.
+     * This method is called by the RabbitMQ consumer.
+     * 
+     * @param orderId the ID of the order to update
+     * @param inventoryAvailable true if inventory was reserved, false if rejected
+     */
+    void updateOrderStatus(Long orderId, boolean inventoryAvailable);
 }

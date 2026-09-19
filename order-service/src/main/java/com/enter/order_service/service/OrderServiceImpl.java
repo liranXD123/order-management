@@ -5,6 +5,9 @@ import com.enter.order_service.dto.OrderRequestDto;
 import com.enter.order_service.dto.OrderResponseDto;
 import com.enter.order_service.entity.Order;
 import com.enter.order_service.mapper.OrderMapper;
+import com.enter.order_service.messaging.OrderMessagePublisher;
+import com.enter.order_service.messaging.event.OrderCreatedEvent;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderDal orderDal;
     private final OrderMapper orderMapper;
+    private final OrderMessagePublisher orderMessagePublisher;
 
     @Override
     public OrderResponseDto createOrder(OrderRequestDto requestDto) {
@@ -30,6 +34,15 @@ public class OrderServiceImpl implements OrderService {
         log.info("Order successfully persisted with ID: {}", savedOrder.getId());
         
         // 3. Map Entity back to DTO for the response
+        // 4. Publish OrderCreated event through RabbitMQ
+        OrderCreatedEvent event = OrderCreatedEvent.builder()
+                .orderId(savedOrder.getId())
+                .productId(savedOrder.getProductId())
+                .quantity(savedOrder.getQuantity())
+                .build();
+                
+        orderMessagePublisher.publishOrderCreatedEvent(event);        
+        
         return orderMapper.toResponseDto(savedOrder);
     }
 
@@ -45,5 +58,29 @@ public class OrderServiceImpl implements OrderService {
                 });
                 
         return orderMapper.toResponseDto(order);
+    }
+
+    @Override
+    public void updateOrderStatus(Long orderId, boolean inventoryAvailable) {
+        log.info("Updating status for order ID: {} based on inventory availability: {}", orderId, inventoryAvailable);
+        
+        // Fetch the order. If it doesn't exist, throw an exception
+        Order order = orderDal.findById(orderId)
+                .orElseThrow(() -> {
+                    log.error("Failed to update status. Order ID: {} not found", orderId);
+                    return new RuntimeException("Order not found");
+                });
+        
+        // Main flow Step 8 & 10: Change status to CONFIRMED or REJECTED based on the event
+        if (inventoryAvailable) {
+            order.setStatus(com.enter.order_service.entity.OrderStatus.CONFIRMED);
+            log.info("Order ID: {} status successfully updated to CONFIRMED", orderId);
+        } else {
+            order.setStatus(com.enter.order_service.entity.OrderStatus.REJECTED);
+            log.info("Order ID: {} status successfully updated to REJECTED (Insufficient inventory)", orderId);
+        }
+        
+        // Persist the updated entity back to the database via DAL
+        orderDal.save(order);
     }
 }
