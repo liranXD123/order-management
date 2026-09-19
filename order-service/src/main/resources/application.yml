@@ -1,0 +1,23 @@
+# Spring configuration
+spring:
+  application:
+    name: order-service
+
+  # Database Connection Configuration
+  datasource:
+    # We use environment variables (injected by Docker or IDE) to avoid hard-coding secrets
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/order_db}
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:secret_password}
+
+  # JPA (Hibernate) Configuration
+  jpa:
+    hibernate:
+      # We disable automatic schema creation because we must use Flyway
+      ddl-auto: validate
+    show-sql: true # Helpful for debugging to see the SQL queries in the console
+
+  # Flyway Configuration for database migrations
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
