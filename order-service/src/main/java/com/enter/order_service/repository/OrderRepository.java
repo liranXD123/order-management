@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * Extends JpaRepository to inherit standard CRUD operations (save, findById, etc.).
  * This layer directly interacts with Spring Data JPA and the underlying database.
  */
-@Repository
+
 public interface OrderRepository extends JpaRepository<Order, Long> {
     // JpaRepository provides all basic methods out of the box.
     // Custom query methods can be added here if needed in the future.
