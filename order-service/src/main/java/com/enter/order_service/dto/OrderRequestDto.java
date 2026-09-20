@@ -3,6 +3,7 @@ package com.enter.order_service.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
  * Uses Jakarta Validation to ensure the input is valid before processing.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequestDto {
