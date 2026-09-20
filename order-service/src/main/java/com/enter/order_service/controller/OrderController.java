@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderService orderService; // Injected service to handle business logic related to orders
 
     /**
      * Endpoint to create a new order.
