@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: inventory-service
+
+  # Database Connection Configuration for Inventory DB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/inventory_db}
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:secret_password}
+
+  jpa:
+    hibernate:
+      # Must use validate to enforce Flyway migrations
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+# The Inventory Service runs on port 8081 as defined in our docker-compose
+server:
+  port: 8081
