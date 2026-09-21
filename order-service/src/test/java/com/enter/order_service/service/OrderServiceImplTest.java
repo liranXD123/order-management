@@ -58,8 +58,7 @@ class OrderServiceImplTest {
         // 3. Assert: Verify the results match our expectations
         assertNotNull(actualResponse);
         assertEquals(1L, actualResponse.getId());
-        assertEquals("PENDING_INVENTORY", actualResponse.getStatus());
-        
+        assertEquals(OrderStatus.PENDING_INVENTORY, actualResponse.getStatus());        
         // Verify that the publisher was called exactly once to send the message to RabbitMQ
         verify(orderMessagePublisher, times(1)).publishOrderCreatedEvent(any());
     }
