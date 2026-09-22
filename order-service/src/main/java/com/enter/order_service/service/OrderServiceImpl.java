@@ -28,7 +28,7 @@ public class OrderServiceImpl implements OrderService {
         // 1. Map DTO to Entity (Initial status is set in Mapper)
         Order order = orderMapper.toEntity(requestDto);
         
-        // 2. Persist the order via DAL
+        // 2. Persist the order via DAL and save it to the database. The DAL abstracts the repository layer.
         Order savedOrder = orderDal.save(order);
         
         log.info("Order successfully persisted with ID: {}", savedOrder.getId());
@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
                 .quantity(savedOrder.getQuantity())
                 .build();
                 
-        orderMessagePublisher.publishOrderCreatedEvent(event);        
+        orderMessagePublisher.publishOrderCreatedEvent(event); // Requirement Flow Step 5: Publish event to RabbitMQ       
         
         return orderMapper.toResponseDto(savedOrder);
     }
