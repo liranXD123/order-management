@@ -34,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("Order successfully persisted with ID: {}", savedOrder.getId());
         
         // 3. Map Entity back to DTO for the response
+        OrderResponseDto responseDto = orderMapper.toResponseDto(savedOrder);
         // 4. Publish OrderCreated event through RabbitMQ
         OrderCreatedEvent event = OrderCreatedEvent.builder()
                 .orderId(savedOrder.getId())
@@ -43,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
                 
         orderMessagePublisher.publishOrderCreatedEvent(event); // Requirement Flow Step 5: Publish event to RabbitMQ       
         
-        return orderMapper.toResponseDto(savedOrder);
+        return responseDto;
     }
 
     @Override
