@@ -14,7 +14,7 @@ import java.util.Optional;
 @Slf4j
 public class InventoryServiceImpl implements InventoryService {
 
-    private final InventoryDal inventoryDal;
+    private final InventoryDal inventoryDal; // Dependency injection for InventoryDal to interact with the database
 
     @Override
     public boolean checkAndReserveInventory(String productId, Integer quantity) {
